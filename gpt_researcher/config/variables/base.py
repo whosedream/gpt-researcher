@@ -49,3 +49,10 @@ class BaseConfig(TypedDict):
     IMAGE_GENERATION_ENABLED: bool
     IMAGE_GENERATION_STYLE: str  # Image style: "dark", "light", or "auto"
     IMAGE_GENERATION_PROVIDER: str  # Image provider: "google" or "modelslab"
+    # Multi-source search settings
+    MULTI_SOURCE_ENABLED: bool
+    SEARCH_SOURCES: List[str]
+    SEARCH_RATE_LIMIT_PER_SOURCE: float
+    SEARCH_MAX_RETRIES: int
+    SEARCH_MAX_RESULTS_PER_SOURCE: int
+    SEARCH_QUALITY_THRESHOLD: float

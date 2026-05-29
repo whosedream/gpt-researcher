@@ -28,6 +28,7 @@ from .skills.deep_research import DeepResearchSkill
 from .skills.image_generator import ImageGenerator
 from .skills.researcher import ResearchConductor
 from .skills.writer import ReportGenerator
+from .utils.bloom_filter import URLBloomFilter
 from .utils.enum import ReportSource, ReportType, Tone
 from .utils.llm import create_chat_completion
 from .vector_store import VectorStoreWrapper
@@ -157,7 +158,11 @@ class GPTResearcher:
         self.role = role
         self.parent_query = parent_query
         self.subtopics = subtopics or []
-        self.visited_urls = visited_urls or set()
+        # Replace visited_urls set with a Bloom filter for memory-efficient dedup.
+        # If a pre-existing set is supplied (backward compat), seed the filter.
+        self.visited_urls: URLBloomFilter = URLBloomFilter()
+        if visited_urls:
+            self.visited_urls.update(visited_urls)
         self.verbose = verbose
         self.context = context or []
         self.headers = headers or {}
@@ -677,10 +682,16 @@ class GPTResearcher:
     def get_source_urls(self) -> list:
         """Get all visited source URLs.
 
+        Note: With a Bloom filter, exact URL enumeration is not supported.
+        This method returns an empty list. Use the ``visited_urls`` filter
+        directly for membership checks (``url in self.visited_urls``).
+
         Returns:
-            List of visited URL strings.
+            Empty list (Bloom filter does not support enumeration).
         """
-        return list(self.visited_urls)
+        # Bloom filters cannot enumerate their contents.
+        # Callers should use ``url in self.visited_urls`` for membership checks.
+        return []
 
     def get_research_context(self) -> list:
         """Get the accumulated research context.

@@ -23,12 +23,14 @@ try:
     from .tool_selector import MCPToolSelector
     from .research import MCPResearchSkill
     from .streaming import MCPStreamer
-    
+    from .server import mcp as mcp_server
+
     __all__ = [
         "MCPClientManager",
-        "MCPToolSelector", 
+        "MCPToolSelector",
         "MCPResearchSkill",
         "MCPStreamer",
+        "mcp_server",
         "HAS_MCP_ADAPTERS"
     ]
     

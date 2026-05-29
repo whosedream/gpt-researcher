@@ -15,6 +15,7 @@ Classes:
 """
 
 import asyncio
+import logging
 import os
 from typing import Optional
 
@@ -31,6 +32,9 @@ from ..prompts import PromptFamily
 from ..utils.costs import estimate_embedding_cost
 from ..vector_store import VectorStoreWrapper
 from .retriever import SearchAPIRetriever, SectionRetriever
+from .token_budget import TokenBudget, count_tokens, truncate_to_tokens
+
+logger = logging.getLogger(__name__)
 
 
 class VectorstoreCompressor:
@@ -101,6 +105,7 @@ class ContextCompressor:
         embeddings,
         max_results: int = 5,
         prompt_family: type[PromptFamily] | PromptFamily = PromptFamily,
+        token_budget: Optional[int] = None,
         **kwargs,
     ):
         """Initialize the ContextCompressor.
@@ -110,6 +115,9 @@ class ContextCompressor:
             embeddings: Embedding model instance.
             max_results: Maximum number of results to return.
             prompt_family: Prompt family for formatting output.
+            token_budget: Optional hard token limit for the output. When set,
+                the output is truncated to this many tokens using tiktoken.
+                ``None`` (default) preserves the original behaviour.
             **kwargs: Additional keyword arguments.
         """
         self.max_results = max_results
@@ -118,6 +126,7 @@ class ContextCompressor:
         self.embeddings = embeddings
         self.similarity_threshold = os.environ.get("SIMILARITY_THRESHOLD", 0.35)
         self.prompt_family = prompt_family
+        self.token_budget = token_budget
 
     def __get_contextual_retriever(self):
         """Build the contextual compression retriever pipeline.
@@ -168,14 +177,33 @@ class ContextCompressor:
                 )
                 for doc in self.documents[:max_results]
             ]
-            return self.prompt_family.pretty_print_docs(direct_docs, max_results)
+            result = self.prompt_family.pretty_print_docs(direct_docs, max_results)
+        else:
+            # Standard path: use compression for large content
+            compressed_docs = self.__get_contextual_retriever()
+            if cost_callback:
+                cost_callback(estimate_embedding_cost(model=OPENAI_EMBEDDING_MODEL, docs=self.documents))
+            relevant_docs = await asyncio.to_thread(compressed_docs.invoke, query, **self.kwargs)
+            result = self.prompt_family.pretty_print_docs(relevant_docs, max_results)
 
-        # Standard path: use compression for large content
-        compressed_docs = self.__get_contextual_retriever()
-        if cost_callback:
-            cost_callback(estimate_embedding_cost(model=OPENAI_EMBEDDING_MODEL, docs=self.documents))
-        relevant_docs = await asyncio.to_thread(compressed_docs.invoke, query, **self.kwargs)
-        return self.prompt_family.pretty_print_docs(relevant_docs, max_results)
+        # Token budget enforcement
+        if self.token_budget is not None:
+            tokens_in = count_tokens(result)
+            if tokens_in > self.token_budget:
+                result = truncate_to_tokens(result, self.token_budget)
+                tokens_out = count_tokens(result)
+                logger.info(
+                    "Token budget enforced: %d -> %d tokens (%.0f%% reduction)",
+                    tokens_in, tokens_out,
+                    (1 - tokens_out / tokens_in) * 100 if tokens_in else 0,
+                )
+            else:
+                logger.debug(
+                    "Token budget not exceeded: %d / %d tokens",
+                    tokens_in, self.token_budget,
+                )
+
+        return result
 
 
 class WrittenContentCompressor:

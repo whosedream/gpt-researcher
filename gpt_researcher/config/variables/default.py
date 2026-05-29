@@ -52,4 +52,12 @@ DEFAULT_CONFIG: BaseConfig = {
     "IMAGE_GENERATION_ENABLED": False,  # Master switch for inline image generation
     "IMAGE_GENERATION_STYLE": "dark",  # Image style: "dark" (matches app theme), "light", or "auto"
     "IMAGE_GENERATION_PROVIDER": "google",  # Image provider: "google" or "modelslab"
+
+    # Multi-source search settings
+    "MULTI_SOURCE_ENABLED": False,  # Enable multi-source concurrent search
+    "SEARCH_SOURCES": ["tavily"],  # List of retriever names to query concurrently
+    "SEARCH_RATE_LIMIT_PER_SOURCE": 10.0,  # Max requests/second per source (token bucket)
+    "SEARCH_MAX_RETRIES": 3,  # Max retries per source on failure
+    "SEARCH_MAX_RESULTS_PER_SOURCE": 10,  # Max results to request from each source
+    "SEARCH_QUALITY_THRESHOLD": 0.0,  # Minimum quality score to include (0-1)
 }
