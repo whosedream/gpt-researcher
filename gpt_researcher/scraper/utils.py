@@ -13,14 +13,27 @@ import bs4
 from bs4 import BeautifulSoup
 
 
-def get_relevant_images(soup: BeautifulSoup, url: str) -> list:
-    """Extract relevant images from the page"""
+def get_relevant_images(soup: BeautifulSoup, url: str, query: str = None) -> list:
+    """Extract relevant images from the page.
+
+    Uses CSS-based scoring by default. When a query is provided and CLIP is
+    enabled in config, images are additionally scored by semantic relevance
+    to the query text via CLIP cosine similarity.
+
+    Args:
+        soup: Parsed HTML document.
+        url: Source URL (used to resolve relative image paths).
+        query: Optional search query for CLIP-based semantic filtering.
+
+    Returns:
+        List of image dicts sorted by relevance, limited to CLIP_MAX_IMAGES.
+    """
     image_urls = []
-    
+
     try:
         # Find all img tags with src attribute
         all_images = soup.find_all('img', src=True)
-        
+
         for img in all_images:
             img_src = urljoin(url, img['src'])
             if img_src.startswith(('http://', 'https://')):
@@ -43,17 +56,67 @@ def get_relevant_images(soup: BeautifulSoup, url: str) -> list:
                             score = 0  # Lowest score
                         else:
                             continue  # Skip small images
-                
+
                 image_urls.append({'url': img_src, 'score': score})
-        
-        # Sort images by score (highest first)
+
+        # Sort images by CSS score (highest first)
         sorted_images = sorted(image_urls, key=lambda x: x['score'], reverse=True)
-        
-        return sorted_images[:10]  # Ensure we don't return more than 10 images in total
-    
+
+        # Keep a larger candidate pool for CLIP re-ranking
+        candidate_limit = 20 if query else 10
+        candidates = sorted_images[:candidate_limit]
+
+        # Apply CLIP semantic re-ranking when a query is provided
+        if query:
+            candidates = _apply_clip_scoring(candidates, query)
+
+        max_images = _get_clip_max_images()
+        return candidates[:max_images]
+
     except Exception as e:
         logging.error(f"Error in get_relevant_images: {e}")
         return []
+
+
+def _apply_clip_scoring(images: list, query: str) -> list:
+    """Apply CLIP-based semantic re-ranking to candidate images.
+
+    If CLIP is disabled or unavailable, returns images unchanged with
+    clip_score set to 0.0 for consistent downstream handling.
+    """
+    try:
+        from gpt_researcher.config import Config
+        config = Config()
+
+        if not getattr(config, 'clip_enabled', False):
+            return images
+
+        from gpt_researcher.multimodal.clip_filter import CLIPImageFilter
+        clip_filter = CLIPImageFilter(
+            model_name=getattr(config, 'clip_model', 'openai/clip-vit-base-patch32'),
+            device=getattr(config, 'clip_device', 'cuda'),
+        )
+
+        if not clip_filter.available:
+            logging.info("CLIP model not available, using CSS scores only.")
+            return [{**img, 'clip_score': 0.0} for img in images]
+
+        threshold = getattr(config, 'clip_relevance_threshold', 0.25)
+        return clip_filter.filter_relevant(images, query, threshold=threshold)
+
+    except Exception as e:
+        logging.warning(f"CLIP scoring failed, falling back to CSS scores: {e}")
+        return [{**img, 'clip_score': 0.0} for img in images]
+
+
+def _get_clip_max_images() -> int:
+    """Get the configured max images limit."""
+    try:
+        from gpt_researcher.config import Config
+        config = Config()
+        return getattr(config, 'clip_max_images', 10)
+    except Exception:
+        return 10
 
 def parse_dimension(value: str) -> int:
     """Parse dimension value, handling px units"""

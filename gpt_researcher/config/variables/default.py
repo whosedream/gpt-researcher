@@ -60,4 +60,11 @@ DEFAULT_CONFIG: BaseConfig = {
     "SEARCH_MAX_RETRIES": 3,  # Max retries per source on failure
     "SEARCH_MAX_RESULTS_PER_SOURCE": 10,  # Max results to request from each source
     "SEARCH_QUALITY_THRESHOLD": 0.0,  # Minimum quality score to include (0-1)
+
+    # CLIP multimodal image filtering settings
+    "CLIP_ENABLED": False,  # Enable CLIP-based image relevance filtering
+    "CLIP_MODEL": "openai/clip-vit-base-patch32",  # HuggingFace CLIP model
+    "CLIP_DEVICE": "cuda",  # Compute device: "cuda" or "cpu" (auto-detect if None)
+    "CLIP_RELEVANCE_THRESHOLD": 0.25,  # Minimum cosine similarity to keep image
+    "CLIP_MAX_IMAGES": 10,  # Max images to process per query
 }

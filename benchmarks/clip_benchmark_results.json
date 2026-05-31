@@ -1,0 +1,55 @@
+{
+  "model": "openai/clip-vit-base-patch32",
+  "device": "cuda",
+  "load_time_seconds": 6.380359411239624,
+  "total_cases": 5,
+  "recall_at_1": 100.0,
+  "recall_at_3": 100.0,
+  "results": [
+    {
+      "query": "a red circle",
+      "relevant": "red_circle",
+      "relevant_rank": 1,
+      "relevant_score": 0.29866379499435425,
+      "top_score": 0.29866379499435425,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    },
+    {
+      "query": "a blue square shape",
+      "relevant": "blue_square",
+      "relevant_rank": 1,
+      "relevant_score": 0.3234807550907135,
+      "top_score": 0.3234807550907135,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    },
+    {
+      "query": "a green triangle in nature",
+      "relevant": "green_triangle",
+      "relevant_rank": 1,
+      "relevant_score": 0.3271041512489319,
+      "top_score": 0.3271041512489319,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    },
+    {
+      "query": "a yellow star shining bright",
+      "relevant": "yellow_star",
+      "relevant_rank": 1,
+      "relevant_score": 0.2931152582168579,
+      "top_score": 0.2931152582168579,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    },
+    {
+      "query": "a dark black circle",
+      "relevant": "black_circle",
+      "relevant_rank": 1,
+      "relevant_score": 0.3513444662094116,
+      "top_score": 0.3513444662094116,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    }
+  ]
+}
