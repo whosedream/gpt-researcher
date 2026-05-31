@@ -52,4 +52,19 @@ DEFAULT_CONFIG: BaseConfig = {
     "IMAGE_GENERATION_ENABLED": False,  # Master switch for inline image generation
     "IMAGE_GENERATION_STYLE": "dark",  # Image style: "dark" (matches app theme), "light", or "auto"
     "IMAGE_GENERATION_PROVIDER": "google",  # Image provider: "google" or "modelslab"
+
+    # Multi-source search settings
+    "MULTI_SOURCE_ENABLED": False,  # Enable multi-source concurrent search
+    "SEARCH_SOURCES": ["tavily"],  # List of retriever names to query concurrently
+    "SEARCH_RATE_LIMIT_PER_SOURCE": 10.0,  # Max requests/second per source (token bucket)
+    "SEARCH_MAX_RETRIES": 3,  # Max retries per source on failure
+    "SEARCH_MAX_RESULTS_PER_SOURCE": 10,  # Max results to request from each source
+    "SEARCH_QUALITY_THRESHOLD": 0.0,  # Minimum quality score to include (0-1)
+
+    # CLIP multimodal image filtering settings
+    "CLIP_ENABLED": False,  # Enable CLIP-based image relevance filtering
+    "CLIP_MODEL": "openai/clip-vit-base-patch32",  # HuggingFace CLIP model
+    "CLIP_DEVICE": "cuda",  # Compute device: "cuda" or "cpu" (auto-detect if None)
+    "CLIP_RELEVANCE_THRESHOLD": 0.25,  # Minimum cosine similarity to keep image
+    "CLIP_MAX_IMAGES": 10,  # Max images to process per query
 }

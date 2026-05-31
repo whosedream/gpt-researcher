@@ -1,0 +1,14 @@
+{
+  "dataset": "Flickr8k",
+  "split": "test",
+  "model": "openai/clip-vit-base-patch32",
+  "device": "cuda",
+  "load_time": 5.192169427871704,
+  "n_queries": 50,
+  "n_candidates": 10,
+  "recall_at_1": 94.0,
+  "recall_at_5": 100.0,
+  "recall_at_10": 100.0,
+  "avg_score_correct": 0.31909082710742953,
+  "avg_score_top1": 0.3194983786344528
+}

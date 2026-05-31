@@ -1,0 +1,90 @@
+{
+  "model": "openai/clip-vit-base-patch32",
+  "device": "cuda",
+  "load_time": 5.796998739242554,
+  "total": 10,
+  "recall_at_1": 100.0,
+  "recall_at_3": 100.0,
+  "results": [
+    {
+      "query": "a cute cat with green eyes",
+      "relevant": "cat",
+      "relevant_rank": 1,
+      "relevant_score": 0.30248624086380005,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    },
+    {
+      "query": "a golden retriever dog with tongue out",
+      "relevant": "dog",
+      "relevant_rank": 1,
+      "relevant_score": 0.21473097801208496,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    },
+    {
+      "query": "a red sports car driving fast",
+      "relevant": "car",
+      "relevant_rank": 1,
+      "relevant_score": 0.28299325704574585,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    },
+    {
+      "query": "a sailboat on the ocean",
+      "relevant": "boat",
+      "relevant_rank": 1,
+      "relevant_score": 0.35352927446365356,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    },
+    {
+      "query": "a large green tree with thick trunk",
+      "relevant": "tree",
+      "relevant_rank": 1,
+      "relevant_score": 0.2618090510368347,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    },
+    {
+      "query": "a beautiful pink flower with petals",
+      "relevant": "flower",
+      "relevant_rank": 1,
+      "relevant_score": 0.2639506459236145,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    },
+    {
+      "query": "a smartphone with blue screen",
+      "relevant": "phone",
+      "relevant_rank": 1,
+      "relevant_score": 0.32674306631088257,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    },
+    {
+      "query": "a book with text on pages",
+      "relevant": "book",
+      "relevant_rank": 1,
+      "relevant_score": 0.2606128454208374,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    },
+    {
+      "query": "a delicious pizza with pepperoni toppings",
+      "relevant": "pizza",
+      "relevant_rank": 1,
+      "relevant_score": 0.2701343894004822,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    },
+    {
+      "query": "a house with red roof and chimney",
+      "relevant": "house",
+      "relevant_rank": 1,
+      "relevant_score": 0.3174053132534027,
+      "recall_at_1": 1,
+      "recall_at_3": 1
+    }
+  ]
+}

@@ -101,6 +101,10 @@ def get_retriever(retriever: str):
             from gpt_researcher.retrievers import OpenAlexSearch
 
             return OpenAlexSearch
+        case "multi_source":
+            from gpt_researcher.retrievers import MultiSourceSearch
+
+            return MultiSourceSearch
 
         case _:
             return None
